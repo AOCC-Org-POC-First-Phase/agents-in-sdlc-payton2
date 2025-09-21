@@ -5,12 +5,144 @@ import "../styles/global.css";
 ---
 
 <Layout title="Tailspin Toys - Crowdfunding your new favorite game!">
-  <div class="py-8">
-    <div class="max-w-3xl mb-10">
-      <h1 class="text-4xl font-bold mb-4 text-slate-100">Welcome to Tailspin Toys</h1>
-      <p class="text-xl text-slate-300">Find your next game! And maybe even back one! Explore our collection!</p>
-    </div>
+  <!-- Enhanced Hero Section -->
+  <div class="relative overflow-hidden">
+    <!-- Animated background gradient -->
+    <div class="absolute inset-0 bg-gradient-to-br from-slate-900 via-blue-900/20 to-purple-900/30 animate-gradient-x"></div>
+    <div class="absolute inset-0 bg-gradient-to-r from-blue-600/10 via-purple-600/5 to-cyan-600/10 animate-pulse-slow"></div>
     
-    <GameList client:only="svelte" />
+    <!-- Floating orbs for decoration -->
+    <div class="absolute top-10 left-10 w-72 h-72 bg-blue-500/20 rounded-full mix-blend-multiply filter blur-xl animate-blob"></div>
+    <div class="absolute top-0 right-4 w-72 h-72 bg-purple-500/20 rounded-full mix-blend-multiply filter blur-xl animate-blob animation-delay-2000"></div>
+    <div class="absolute -bottom-8 left-20 w-72 h-72 bg-cyan-500/20 rounded-full mix-blend-multiply filter blur-xl animate-blob animation-delay-4000"></div>
+    
+    <div class="relative z-10 py-16">
+      <div class="max-w-5xl mx-auto px-4">
+        <!-- Main hero content -->
+        <div class="text-center mb-16">
+          <div class="inline-flex items-center px-4 py-2 mb-6 bg-blue-500/10 border border-blue-400/20 rounded-full text-blue-300 text-sm font-medium backdrop-blur-sm">
+            <svg class="w-4 h-4 mr-2" fill="currentColor" viewBox="0 0 20 20">
+              <path fill-rule="evenodd" d="M11.3 1.046A1 1 0 0112 2v5h4a1 1 0 01.82 1.573l-7 10A1 1 0 018 18v-5H4a1 1 0 01-.82-1.573l7-10a1 1 0 011.12-.38z" clip-rule="evenodd"/>
+            </svg>
+            DevOps Gaming Revolution
+          </div>
+          
+          <h1 class="text-6xl md:text-7xl font-bold mb-6 bg-gradient-to-r from-slate-100 via-blue-100 to-purple-100 bg-clip-text text-transparent leading-tight">
+            Welcome to
+            <span class="block bg-gradient-to-r from-blue-400 via-purple-400 to-cyan-400 bg-clip-text text-transparent">
+              Tailspin Toys
+            </span>
+          </h1>
+          
+          <p class="text-xl md:text-2xl text-slate-300 mb-8 max-w-3xl mx-auto leading-relaxed">
+            Discover and fund the next generation of 
+            <span class="text-blue-400 font-semibold">DevOps-inspired board games</span>. 
+            Where continuous integration meets continuous fun!
+          </p>
+          
+          <!-- Action buttons -->
+          <div class="flex flex-col sm:flex-row gap-4 justify-center items-center">
+            <button class="group relative px-8 py-4 bg-gradient-to-r from-blue-600 to-purple-600 text-white font-semibold rounded-xl shadow-lg hover:shadow-blue-500/25 hover:shadow-2xl transform hover:scale-105 transition-all duration-300 overflow-hidden">
+              <div class="absolute inset-0 bg-gradient-to-r from-blue-400 to-purple-400 opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
+              <div class="relative flex items-center">
+                <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"/>
+                </svg>
+                Explore Games
+              </div>
+            </button>
+            
+            <button class="group px-8 py-4 border-2 border-slate-600 hover:border-blue-400 text-slate-300 hover:text-blue-400 font-semibold rounded-xl backdrop-blur-sm hover:backdrop-blur-md transition-all duration-300 flex items-center">
+              <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14.828 14.828a4 4 0 01-5.656 0M9 10h1.586a1 1 0 01.707.293l2.414 2.414a1 1 0 00.707.293H15M9 10V9a3 3 0 013-3v2M9 10V5l2-2v6m0 0V9.5a.5.5 0 01.5-.5h1"/>
+              </svg>
+              Learn More
+            </button>
+          </div>
+        </div>
+        
+        <!-- Stats section -->
+        <div class="grid grid-cols-2 md:grid-cols-4 gap-8 mb-16">
+          <div class="text-center group">
+            <div class="text-3xl font-bold text-blue-400 mb-2 group-hover:scale-110 transition-transform duration-300">12+</div>
+            <div class="text-slate-400 text-sm">Active Games</div>
+          </div>
+          <div class="text-center group">
+            <div class="text-3xl font-bold text-purple-400 mb-2 group-hover:scale-110 transition-transform duration-300">50K+</div>
+            <div class="text-slate-400 text-sm">Backers</div>
+          </div>
+          <div class="text-center group">
+            <div class="text-3xl font-bold text-cyan-400 mb-2 group-hover:scale-110 transition-transform duration-300">$2M+</div>
+            <div class="text-slate-400 text-sm">Funded</div>
+          </div>
+          <div class="text-center group">
+            <div class="text-3xl font-bold text-green-400 mb-2 group-hover:scale-110 transition-transform duration-300">98%</div>
+            <div class="text-slate-400 text-sm">Success Rate</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+  
+  <!-- Games Section -->
+  <div class="relative py-16">
+    <div class="max-w-7xl mx-auto px-4">
+      <GameList client:only="svelte" />
+    </div>
   </div>
 </Layout>
+
+<style>
+  @keyframes gradient-x {
+    0%, 100% {
+      transform: translateX(0%);
+    }
+    50% {
+      transform: translateX(100%);
+    }
+  }
+  
+  @keyframes blob {
+    0% {
+      transform: translate(0px, 0px) scale(1);
+    }
+    33% {
+      transform: translate(30px, -50px) scale(1.1);
+    }
+    66% {
+      transform: translate(-20px, 20px) scale(0.9);
+    }
+    100% {
+      transform: translate(0px, 0px) scale(1);
+    }
+  }
+  
+  @keyframes pulse-slow {
+    0%, 100% {
+      opacity: 0.7;
+    }
+    50% {
+      opacity: 0.3;
+    }
+  }
+  
+  .animate-gradient-x {
+    animation: gradient-x 15s ease infinite;
+  }
+  
+  .animate-blob {
+    animation: blob 7s infinite;
+  }
+  
+  .animate-pulse-slow {
+    animation: pulse-slow 4s ease-in-out infinite;
+  }
+  
+  .animation-delay-2000 {
+    animation-delay: 2s;
+  }
+  
+  .animation-delay-4000 {
+    animation-delay: 4s;
+  }
+</style>
