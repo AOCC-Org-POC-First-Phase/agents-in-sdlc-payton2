@@ -41,17 +41,16 @@ class SudokuGame {
     }
 
     getCellClasses(row, col) {
-        let classes = 'w-12 h-12 text-center font-semibold text-lg border-2 ';
-        classes += 'bg-slate-700 text-white focus:bg-slate-600 focus:outline-none ';
-        classes += 'transition-all duration-200 ';
+        let classes = 'sudoku-cell w-14 h-14 text-center font-bold text-xl border-2 ';
+        classes += 'text-white focus:outline-none transition-all duration-200 ';
         
-        // Add borders for 3x3 box separation
-        if (col % 3 === 0 && col !== 0) classes += 'border-l-slate-400 ';
-        if (row % 3 === 0 && row !== 0) classes += 'border-t-slate-400 ';
-        if (col % 3 === 2 && col !== 8) classes += 'border-r-slate-400 ';
-        if (row % 3 === 2 && row !== 8) classes += 'border-b-slate-400 ';
+        // Add borders for 3x3 box separation with better visual distinction
+        if (col % 3 === 0 && col !== 0) classes += 'border-l-slate-400 border-l-4 ';
+        if (row % 3 === 0 && row !== 0) classes += 'border-t-slate-400 border-t-4 ';
+        if (col % 3 === 2 && col !== 8) classes += 'border-r-slate-400 border-r-4 ';
+        if (row % 3 === 2 && row !== 8) classes += 'border-b-slate-400 border-b-4 ';
         
-        classes += 'border-slate-600 rounded ';
+        classes += 'border-slate-600/50 rounded-lg ';
         
         return classes;
     }
@@ -63,14 +62,12 @@ class SudokuGame {
         document.getElementById('solve').addEventListener('click', () => this.showSolution());
         
         // Difficulty buttons
-        document.querySelectorAll('.difficulty-btn').forEach(btn => {
+        document.querySelectorAll('.difficulty-button').forEach(btn => {
             btn.addEventListener('click', (e) => {
-                document.querySelectorAll('.difficulty-btn').forEach(b => {
-                    b.classList.remove('active', 'bg-slate-600');
-                    b.classList.add('bg-slate-700');
+                document.querySelectorAll('.difficulty-button').forEach(b => {
+                    b.classList.remove('active');
                 });
-                e.target.classList.add('active', 'bg-slate-600');
-                e.target.classList.remove('bg-slate-700');
+                e.target.classList.add('active');
                 this.difficulty = e.target.dataset.difficulty;
                 this.generateNewPuzzle();
             });
@@ -81,13 +78,13 @@ class SudokuGame {
         // Remove previous selection
         if (this.selectedCell) {
             const prevCell = document.getElementById(`cell-${this.selectedCell.row}-${this.selectedCell.col}`);
-            prevCell.classList.remove('ring-2', 'ring-blue-500');
+            prevCell.classList.remove('selected');
         }
         
         // Select new cell
         this.selectedCell = { row, col };
         const cell = document.getElementById(`cell-${row}-${col}`);
-        cell.classList.add('ring-2', 'ring-blue-500');
+        cell.classList.add('selected');
         cell.focus();
     }
 
@@ -100,14 +97,12 @@ class SudokuGame {
             // Check if move is valid and update styling
             if (value !== '') {
                 if (this.isValidMove(row, col, parseInt(value))) {
-                    e.target.classList.remove('bg-red-800');
-                    e.target.classList.add('text-green-400');
+                    e.target.classList.remove('error');
                 } else {
-                    e.target.classList.add('bg-red-800');
-                    e.target.classList.remove('text-green-400');
+                    e.target.classList.add('error');
                 }
             } else {
-                e.target.classList.remove('bg-red-800', 'text-green-400');
+                e.target.classList.remove('error');
             }
             
             this.checkCompletion();
@@ -121,7 +116,7 @@ class SudokuGame {
             if (this.initialGrid[row][col] === 0) {
                 this.grid[row][col] = 0;
                 e.target.value = '';
-                e.target.classList.remove('bg-red-800', 'text-green-400');
+                e.target.classList.remove('error');
             }
         }
         
@@ -141,7 +136,7 @@ class SudokuGame {
 
     generateNewPuzzle() {
         this.isGameComplete = false;
-        this.updateStatus('Generating new puzzle...', 'text-blue-400');
+        this.updateStatus('🎲 Generating new puzzle... Please wait! ⏳', 'text-blue-400');
         
         // Start with empty grids
         this.grid = Array(9).fill().map(() => Array(9).fill(0));
@@ -165,7 +160,7 @@ class SudokuGame {
         
         // Update display
         this.updateDisplay();
-        this.updateStatus('New puzzle generated! Good luck!', 'text-green-400');
+        this.updateStatus('🚀 New puzzle generated! Ready to challenge your mind? 🧠✨', 'text-green-400');
     }
 
     generateCompleteSolution() {
@@ -264,17 +259,15 @@ class SudokuGame {
                 
                 // Style initial numbers differently
                 if (this.initialGrid[row][col] !== 0) {
-                    cell.classList.add('text-slate-300', 'font-bold');
-                    cell.classList.remove('text-white');
+                    cell.classList.add('initial');
                     cell.readOnly = true;
                 } else {
-                    cell.classList.remove('text-slate-300', 'font-bold');
-                    cell.classList.add('text-white');
+                    cell.classList.remove('initial');
                     cell.readOnly = false;
                 }
                 
                 // Reset styling
-                cell.classList.remove('bg-red-800', 'text-green-400');
+                cell.classList.remove('error', 'hint');
             }
         }
     }
@@ -305,20 +298,21 @@ class SudokuGame {
                     isComplete = false;
                 } else if (!this.isValidMove(row, col, value) && this.initialGrid[row][col] === 0) {
                     hasErrors = true;
-                    cell.classList.add('bg-red-800');
+                    cell.classList.add('error');
                 } else {
-                    cell.classList.remove('bg-red-800');
+                    cell.classList.remove('error');
                 }
             }
         }
         
         if (hasErrors) {
-            this.updateStatus('There are errors in your solution! Red cells show conflicts.', 'text-red-400');
+            this.updateStatus('❌ There are errors in your solution! Red cells show conflicts.', 'text-red-400');
         } else if (isComplete) {
-            this.updateStatus('Congratulations! Puzzle solved correctly!', 'text-green-400');
+            this.updateStatus('🎉 Congratulations! Puzzle solved perfectly! 🌟', 'text-green-400');
             this.isGameComplete = true;
+            this.celebrateWin();
         } else {
-            this.updateStatus('Keep going! No errors so far.', 'text-yellow-400');
+            this.updateStatus('✨ Keep going! No errors so far. You\'re doing great! 💪', 'text-yellow-400');
         }
     }
 
@@ -340,6 +334,21 @@ class SudokuGame {
         }
     }
 
+    celebrateWin() {
+        // Add celebration animation to all cells
+        for (let row = 0; row < 9; row++) {
+            for (let col = 0; col < 9; col++) {
+                const cell = document.getElementById(`cell-${row}-${col}`);
+                setTimeout(() => {
+                    cell.style.animation = 'bounce 0.6s ease-in-out';
+                    setTimeout(() => {
+                        cell.style.animation = '';
+                    }, 600);
+                }, (row * 9 + col) * 50); // Stagger the animation
+            }
+        }
+    }
+
     giveHint() {
         const emptyCells = [];
         
@@ -352,7 +361,7 @@ class SudokuGame {
         }
         
         if (emptyCells.length === 0) {
-            this.updateStatus('No more hints needed - puzzle is complete!', 'text-green-400');
+            this.updateStatus('🎯 No more hints needed - puzzle is complete! 🏆', 'text-green-400');
             return;
         }
         
@@ -363,9 +372,9 @@ class SudokuGame {
         this.grid[row][col] = correctValue;
         const cell = document.getElementById(`cell-${row}-${col}`);
         cell.value = correctValue.toString();
-        cell.classList.add('text-blue-400', 'font-semibold');
+        cell.classList.add('hint');
         
-        this.updateStatus(`Hint: Cell at row ${row + 1}, column ${col + 1} is ${correctValue}`, 'text-blue-400');
+        this.updateStatus(`💡 Hint: Cell at row ${row + 1}, column ${col + 1} is ${correctValue} ✨`, 'text-blue-400');
         this.checkCompletion();
     }
 
@@ -376,20 +385,32 @@ class SudokuGame {
                     this.grid[row][col] = this.solution[row][col];
                     const cell = document.getElementById(`cell-${row}-${col}`);
                     cell.value = this.solution[row][col].toString();
-                    cell.classList.add('text-orange-400');
-                    cell.classList.remove('bg-red-800');
+                    cell.classList.remove('error');
+                    // Add a subtle animation to show solution cells
+                    setTimeout(() => {
+                        cell.style.animation = 'fadeIn 0.5s ease-in-out';
+                        setTimeout(() => {
+                            cell.style.animation = '';
+                        }, 500);
+                    }, (row * 9 + col) * 20);
                 }
             }
         }
         
-        this.updateStatus('Solution revealed! Start a new game to try again.', 'text-orange-400');
+        this.updateStatus('🔍 Solution revealed! Start a new game to try again. 🎲', 'text-orange-400');
         this.isGameComplete = true;
     }
 
     updateStatus(message, colorClass) {
         const statusElement = document.getElementById('game-status');
         statusElement.textContent = message;
-        statusElement.className = `text-center mb-6 text-lg font-medium ${colorClass}`;
+        statusElement.className = `text-center mb-8 text-xl font-bold animate-fade-in ${colorClass}`;
+        
+        // Add a subtle animation to the status message
+        statusElement.style.animation = 'fadeIn 0.5s ease-in-out';
+        setTimeout(() => {
+            statusElement.style.animation = '';
+        }, 500);
     }
 }
 

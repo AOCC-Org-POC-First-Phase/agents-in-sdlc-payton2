@@ -8,86 +8,266 @@
     <script>
         tailwind.config = {
             darkMode: 'class',
+            theme: {
+                extend: {
+                    animation: {
+                        'pulse-slow': 'pulse 3s cubic-bezier(0.4, 0, 0.6, 1) infinite',
+                        'bounce-gentle': 'bounce 2s infinite',
+                        'fade-in': 'fadeIn 0.5s ease-in-out',
+                        'scale-in': 'scaleIn 0.3s ease-out',
+                    },
+                    keyframes: {
+                        fadeIn: {
+                            '0%': { opacity: '0', transform: 'translateY(-10px)' },
+                            '100%': { opacity: '1', transform: 'translateY(0)' },
+                        },
+                        scaleIn: {
+                            '0%': { transform: 'scale(0.95)' },
+                            '100%': { transform: 'scale(1)' },
+                        }
+                    }
+                }
+            }
         }
     </script>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
     <style>
         body {
             font-family: 'Inter', system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
+            background: linear-gradient(135deg, #0f172a 0%, #1e293b 50%, #334155 100%);
+        }
+        
+        .sudoku-cell {
+            background: linear-gradient(145deg, #334155, #1e293b);
+            box-shadow: inset 2px 2px 4px rgba(0,0,0,0.3), inset -2px -2px 4px rgba(71,85,105,0.1);
+            transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+        
+        .sudoku-cell:hover {
+            background: linear-gradient(145deg, #475569, #334155);
+            box-shadow: inset 2px 2px 6px rgba(0,0,0,0.4), inset -2px -2px 6px rgba(71,85,105,0.2);
+            transform: translateY(-1px);
+        }
+        
+        .sudoku-cell:focus {
+            background: linear-gradient(145deg, #3b82f6, #1d4ed8);
+            box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.3), inset 2px 2px 4px rgba(0,0,0,0.2);
+            transform: translateY(-1px);
+        }
+        
+        .sudoku-cell.selected {
+            background: linear-gradient(145deg, #6366f1, #4f46e5);
+            box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.4), inset 2px 2px 4px rgba(0,0,0,0.2);
+            transform: scale(1.02);
+        }
+        
+        .sudoku-cell.initial {
+            background: linear-gradient(145deg, #22c55e, #16a34a);
+            color: white;
+            font-weight: 800;
+            text-shadow: 1px 1px 2px rgba(0,0,0,0.3);
+        }
+        
+        .sudoku-cell.error {
+            background: linear-gradient(145deg, #ef4444, #dc2626);
+            animation: shake 0.5s ease-in-out;
+        }
+        
+        .sudoku-cell.hint {
+            background: linear-gradient(145deg, #f59e0b, #d97706);
+            animation: pulse 1s ease-in-out 3;
+        }
+        
+        @keyframes shake {
+            0%, 100% { transform: translateX(0); }
+            10%, 30%, 50%, 70%, 90% { transform: translateX(-2px); }
+            20%, 40%, 60%, 80% { transform: translateX(2px); }
+        }
+        
+        .game-button {
+            background: linear-gradient(145deg, #6366f1, #4f46e5);
+            box-shadow: 0 4px 15px rgba(99, 102, 241, 0.3);
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+        
+        .game-button:hover {
+            background: linear-gradient(145deg, #7c3aed, #6d28d9);
+            box-shadow: 0 6px 20px rgba(124, 58, 237, 0.4);
+            transform: translateY(-2px);
+        }
+        
+        .game-button:active {
+            transform: translateY(0);
+            box-shadow: 0 2px 10px rgba(99, 102, 241, 0.3);
+        }
+        
+        .difficulty-button {
+            background: linear-gradient(145deg, #475569, #334155);
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+        
+        .difficulty-button.active {
+            background: linear-gradient(145deg, #10b981, #059669);
+            box-shadow: 0 4px 15px rgba(16, 185, 129, 0.3);
+        }
+        
+        .difficulty-button:hover {
+            transform: translateY(-1px);
+            box-shadow: 0 4px 12px rgba(0,0,0,0.3);
+        }
+        
+        .grid-container {
+            background: linear-gradient(145deg, #1e293b, #0f172a);
+            border: 3px solid #475569;
+            box-shadow: 
+                0 20px 50px rgba(0,0,0,0.5),
+                inset 0 1px 0 rgba(255,255,255,0.1);
+        }
+        
+        .title-gradient {
+            background: linear-gradient(135deg, #6366f1 0%, #8b5cf6 50%, #a855f7 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            text-shadow: none;
+        }
+        
+        .glow {
+            filter: drop-shadow(0 0 20px rgba(99, 102, 241, 0.3));
         }
     </style>
 </head>
-<body class="min-h-screen bg-slate-900 text-white transition-colors duration-300 m-0 w-full h-full font-sans">
-    <div class="container mx-auto py-6 px-4 sm:px-6 lg:px-8">
-        <div class="max-w-4xl mx-auto">
+<body class="min-h-screen text-white transition-colors duration-300 m-0 w-full h-full font-sans overflow-x-hidden">
+    <div class="container mx-auto py-8 px-4 sm:px-6 lg:px-8">
+        <div class="max-w-5xl mx-auto">
+            <!-- Background decoration -->
+            <div class="absolute inset-0 overflow-hidden pointer-events-none">
+                <div class="absolute top-1/4 left-1/4 w-96 h-96 bg-purple-500/10 rounded-full blur-3xl"></div>
+                <div class="absolute bottom-1/4 right-1/4 w-96 h-96 bg-blue-500/10 rounded-full blur-3xl"></div>
+            </div>
+            
             <!-- Header -->
-            <div class="text-center mb-8">
-                <h1 class="text-4xl font-bold mb-4 text-slate-100">Sudoku Game</h1>
-                <p class="text-xl text-slate-300 mb-6">Challenge your mind with this classic puzzle game!</p>
+            <div class="text-center mb-12 relative">
+                <div class="animate-fade-in">
+                    <h1 class="text-6xl font-black mb-6 title-gradient glow tracking-tight">
+                        🧩 Sudoku Master
+                    </h1>
+                    <p class="text-2xl text-slate-300 mb-8 font-medium">
+                        Elevate your mind with the ultimate puzzle challenge! ✨
+                    </p>
+                </div>
                 
                 <!-- Game Controls -->
-                <div class="flex flex-wrap justify-center gap-4 mb-6">
-                    <button id="new-game" class="px-6 py-3 bg-blue-600 hover:bg-blue-700 text-white rounded-lg transition-all duration-300 font-medium">
-                        New Game
+                <div class="flex flex-wrap justify-center gap-4 mb-8 animate-scale-in">
+                    <button id="new-game" class="game-button px-8 py-4 text-white rounded-2xl font-bold text-lg shadow-lg hover:shadow-xl transform transition-all duration-300">
+                        🎯 New Game
                     </button>
-                    <button id="check-solution" class="px-6 py-3 bg-green-600 hover:bg-green-700 text-white rounded-lg transition-all duration-300 font-medium">
-                        Check Solution
+                    <button id="check-solution" class="game-button px-8 py-4 text-white rounded-2xl font-bold text-lg shadow-lg hover:shadow-xl transform transition-all duration-300" style="background: linear-gradient(145deg, #10b981, #059669);">
+                        ✅ Check Solution
                     </button>
-                    <button id="hint" class="px-6 py-3 bg-yellow-600 hover:bg-yellow-700 text-white rounded-lg transition-all duration-300 font-medium">
-                        Get Hint
+                    <button id="hint" class="game-button px-8 py-4 text-white rounded-2xl font-bold text-lg shadow-lg hover:shadow-xl transform transition-all duration-300" style="background: linear-gradient(145deg, #f59e0b, #d97706);">
+                        💡 Get Hint
                     </button>
-                    <button id="solve" class="px-6 py-3 bg-red-600 hover:bg-red-700 text-white rounded-lg transition-all duration-300 font-medium">
-                        Show Solution
+                    <button id="solve" class="game-button px-8 py-4 text-white rounded-2xl font-bold text-lg shadow-lg hover:shadow-xl transform transition-all duration-300" style="background: linear-gradient(145deg, #ef4444, #dc2626);">
+                        🔍 Show Solution
                     </button>
                 </div>
 
                 <!-- Difficulty Selection -->
-                <div class="flex justify-center gap-2 mb-6">
-                    <button class="difficulty-btn px-4 py-2 bg-slate-700 hover:bg-slate-600 text-white rounded-lg transition-all duration-300 font-medium" data-difficulty="easy">
-                        Easy
+                <div class="flex justify-center gap-3 mb-8">
+                    <span class="text-slate-400 font-medium mr-4 self-center text-lg">Difficulty:</span>
+                    <button class="difficulty-button px-6 py-3 text-white rounded-xl font-bold text-base shadow-lg hover:shadow-xl transform transition-all duration-300" data-difficulty="easy">
+                        🟢 Easy
                     </button>
-                    <button class="difficulty-btn px-4 py-2 bg-slate-600 hover:bg-slate-500 text-white rounded-lg transition-all duration-300 font-medium active" data-difficulty="medium">
-                        Medium
+                    <button class="difficulty-button active px-6 py-3 text-white rounded-xl font-bold text-base shadow-lg hover:shadow-xl transform transition-all duration-300" data-difficulty="medium">
+                        🟡 Medium
                     </button>
-                    <button class="difficulty-btn px-4 py-2 bg-slate-700 hover:bg-slate-600 text-white rounded-lg transition-all duration-300 font-medium" data-difficulty="hard">
-                        Hard
+                    <button class="difficulty-button px-6 py-3 text-white rounded-xl font-bold text-base shadow-lg hover:shadow-xl transform transition-all duration-300" data-difficulty="hard">
+                        🔴 Hard
                     </button>
                 </div>
             </div>
 
             <!-- Game Status -->
-            <div id="game-status" class="text-center mb-6 text-lg font-medium"></div>
+            <div id="game-status" class="text-center mb-8 text-xl font-bold animate-fade-in"></div>
 
             <!-- Sudoku Grid -->
-            <div class="flex justify-center mb-8">
-                <div id="sudoku-grid" class="grid grid-cols-9 gap-1 p-4 bg-slate-800 rounded-lg shadow-2xl border-2 border-slate-700">
+            <div class="flex justify-center mb-12">
+                <div id="sudoku-grid" class="grid grid-cols-9 gap-1 p-6 grid-container rounded-3xl shadow-2xl animate-scale-in">
                     <!-- Grid cells will be generated by JavaScript -->
                 </div>
             </div>
 
             <!-- Game Instructions -->
-            <div class="bg-slate-800 rounded-lg p-6 border border-slate-700">
-                <h3 class="text-xl font-semibold mb-4 text-slate-100">How to Play</h3>
-                <div class="grid md:grid-cols-2 gap-4 text-slate-300">
-                    <div>
-                        <h4 class="font-medium mb-2 text-slate-200">Rules:</h4>
-                        <ul class="list-disc list-inside space-y-1 text-sm">
-                            <li>Fill each row with numbers 1-9</li>
-                            <li>Fill each column with numbers 1-9</li>
-                            <li>Fill each 3×3 box with numbers 1-9</li>
-                            <li>No number can repeat in any row, column, or box</li>
+            <div class="bg-gradient-to-br from-slate-800/80 to-slate-900/80 backdrop-blur-sm rounded-3xl p-8 border border-slate-700/50 shadow-2xl animate-fade-in">
+                <h3 class="text-3xl font-bold mb-6 text-center title-gradient">🎮 How to Play</h3>
+                <div class="grid md:grid-cols-2 gap-8 text-slate-300">
+                    <div class="space-y-4">
+                        <div class="flex items-center gap-3 mb-4">
+                            <div class="w-8 h-8 bg-gradient-to-r from-purple-500 to-pink-500 rounded-lg flex items-center justify-center">
+                                📋
+                            </div>
+                            <h4 class="font-bold text-xl text-slate-200">Game Rules</h4>
+                        </div>
+                        <ul class="space-y-3 text-base">
+                            <li class="flex items-start gap-3">
+                                <span class="text-green-400 font-bold">•</span>
+                                Fill each row with numbers 1-9 (no repeats)
+                            </li>
+                            <li class="flex items-start gap-3">
+                                <span class="text-blue-400 font-bold">•</span>
+                                Fill each column with numbers 1-9 (no repeats)
+                            </li>
+                            <li class="flex items-start gap-3">
+                                <span class="text-purple-400 font-bold">•</span>
+                                Fill each 3×3 box with numbers 1-9 (no repeats)
+                            </li>
+                            <li class="flex items-start gap-3">
+                                <span class="text-yellow-400 font-bold">•</span>
+                                Complete all cells to win the puzzle!
+                            </li>
                         </ul>
                     </div>
-                    <div>
-                        <h4 class="font-medium mb-2 text-slate-200">Controls:</h4>
-                        <ul class="list-disc list-inside space-y-1 text-sm">
-                            <li>Click on a cell to select it</li>
-                            <li>Type a number (1-9) to fill the cell</li>
-                            <li>Press Delete or Backspace to clear a cell</li>
-                            <li>Use the buttons above for game controls</li>
+                    <div class="space-y-4">
+                        <div class="flex items-center gap-3 mb-4">
+                            <div class="w-8 h-8 bg-gradient-to-r from-blue-500 to-cyan-500 rounded-lg flex items-center justify-center">
+                                ⌨️
+                            </div>
+                            <h4 class="font-bold text-xl text-slate-200">Controls</h4>
+                        </div>
+                        <ul class="space-y-3 text-base">
+                            <li class="flex items-start gap-3">
+                                <span class="text-green-400 font-bold">•</span>
+                                <strong>Click</strong> on any cell to select it
+                            </li>
+                            <li class="flex items-start gap-3">
+                                <span class="text-blue-400 font-bold">•</span>
+                                <strong>Type 1-9</strong> to fill the selected cell
+                            </li>
+                            <li class="flex items-start gap-3">
+                                <span class="text-purple-400 font-bold">•</span>
+                                <strong>Delete/Backspace</strong> to clear a cell
+                            </li>
+                            <li class="flex items-start gap-3">
+                                <span class="text-yellow-400 font-bold">•</span>
+                                <strong>Arrow Keys</strong> to navigate the grid
+                            </li>
                         </ul>
+                    </div>
+                </div>
+                
+                <!-- Tips Section -->
+                <div class="mt-8 pt-6 border-t border-slate-600/50">
+                    <h4 class="text-xl font-bold mb-4 text-center text-slate-200">💫 Pro Tips</h4>
+                    <div class="grid sm:grid-cols-2 gap-4 text-sm">
+                        <div class="bg-gradient-to-r from-purple-500/10 to-pink-500/10 p-4 rounded-xl border border-purple-500/20">
+                            <span class="font-semibold text-purple-400">🧠 Strategy:</span> Start with rows/columns that have the most numbers filled
+                        </div>
+                        <div class="bg-gradient-to-r from-blue-500/10 to-cyan-500/10 p-4 rounded-xl border border-blue-500/20">
+                            <span class="font-semibold text-blue-400">⚡ Speed:</span> Use keyboard navigation for faster input
+                        </div>
                     </div>
                 </div>
             </div>
