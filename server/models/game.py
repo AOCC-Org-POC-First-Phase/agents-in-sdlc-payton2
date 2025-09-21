@@ -1,8 +1,13 @@
+"""
+Game model for the Tailspin Toys Crowd Funding platform.
+This module defines the Game model for managing game information in the database.
+"""
 from . import db
 from .base import BaseModel
 from sqlalchemy.orm import validates, relationship
 
 class Game(BaseModel):
+    """Model representing a game in the crowd funding platform."""
     __tablename__ = 'games'
     
     id = db.Column(db.Integer, primary_key=True)
@@ -20,18 +25,56 @@ class Game(BaseModel):
     
     @validates('title')
     def validate_name(self, key, name):
+        """
+        Validate game title field.
+        
+        Args:
+            key: The field name being validated
+            name: The title value to validate
+            
+        Returns:
+            str: The validated title
+            
+        Raises:
+            ValueError: If title validation fails
+        """
         return self.validate_string_length('Game title', name, min_length=2)
     
     @validates('description')
     def validate_description(self, key, description):
+        """
+        Validate game description field.
+        
+        Args:
+            key: The field name being validated
+            description: The description value to validate
+            
+        Returns:
+            str: The validated description
+            
+        Raises:
+            ValueError: If description validation fails
+        """
         if description is not None:
             return self.validate_string_length('Description', description, min_length=10, allow_none=True)
         return description
     
     def __repr__(self):
+        """
+        Return string representation of the game.
+        
+        Returns:
+            str: String representation showing game title and ID
+        """
         return f'<Game {self.title}, ID: {self.id}>'
 
     def to_dict(self):
+        """
+        Convert game instance to dictionary representation.
+        
+        Returns:
+            dict: Dictionary containing game data suitable for JSON serialization
+        """
         return {
             'id': self.id,
             'title': self.title,
