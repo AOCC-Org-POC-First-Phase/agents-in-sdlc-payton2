@@ -1,9 +1,19 @@
+/**
+ * Astro middleware for the Tailspin Toys Crowd Funding platform.
+ * This module provides API request forwarding middleware to proxy requests to the Flask backend.
+ */
 import { defineMiddleware } from "astro:middleware";
 
 // Get server URL from environment variable with fallback for local development
 const API_SERVER_URL = process.env.API_SERVER_URL || 'http://localhost:5100';
 
-// Middleware to handle API requests
+/**
+ * Middleware to handle API requests by forwarding them to the Flask backend server.
+ * 
+ * @param context - The Astro middleware context containing request information
+ * @param next - Function to call the next middleware in the chain
+ * @returns Promise<Response> - The response from the API server or error response
+ */
 export const onRequest = defineMiddleware(async (context, next) => {
   
   // Guard clause: if not an API request, pass through to regular Astro handling

@@ -1,3 +1,7 @@
+"""
+Models package for the Tailspin Toys Crowd Funding platform.
+This module initializes the database and imports all model classes.
+"""
 from flask_sqlalchemy import SQLAlchemy
 
 db = SQLAlchemy()
@@ -8,7 +12,8 @@ from .game import Game
 from .publisher import Publisher
 
 def init_db(app, testing: bool = False):
-    """Initialize the database
+    """
+    Initialize the database with Flask app.
     
     Args:
         app: The Flask application instance
